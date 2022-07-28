@@ -19,7 +19,7 @@
 
 # Script Variables
 $global:breakLoop = "0"
-$scriptVer = "v0.01"
+$scriptVer = "v0.02"
 
 # Checking Variables
 $checkUri = "https://localhost:32400/web/index.html"
@@ -39,7 +39,7 @@ $copyLogPath = "$Env:USERPROFILE\Downloads\Plex-Borked-$(Get-Date -Format "yyyyM
 
 # Switch Variables - On is "yes"
 $loggingOn = "yes"
-$autoRestart = "no"
+$autoRestart = "yes"
 
 
 ### Functions ###
@@ -74,6 +74,8 @@ function Auto-RestartPlex {
 }
 
 function Copy-PlexLog {
+	# Wait a bit for Plex to rotate logs
+	Start-Sleep -Seconds $timeBetweenStopStart
 	Copy-Item $plexLogFile -Destination $copyLogPath
 }
 
