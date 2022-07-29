@@ -1,6 +1,7 @@
 ########################
 # Plex Checker ~ Goose #
 # Created Jul 28, 2022 #
+# Updated Jul 29, 2022 #
 ########################
 
 #################################################################
@@ -19,7 +20,7 @@
 
 # Script Variables
 $global:breakLoop = "0"
-$scriptVer = "v0.02"
+$scriptVer = "v0.03"
 
 # Checking Variables
 $checkUri = "https://localhost:32400/web/index.html"
@@ -40,6 +41,7 @@ $copyLogPath = "$Env:USERPROFILE\Downloads\Plex-Borked-$(Get-Date -Format "yyyyM
 # Switch Variables - On is "yes"
 $loggingOn = "yes"
 $autoRestart = "yes"
+$copyPlexLog = "yes"
 
 
 ### Functions ###
@@ -70,7 +72,7 @@ function Auto-RestartPlex {
 	Start-Sleep -Seconds $timeBetweenStopStart
 	Start-Process -FilePath $plexProcessPath
 	if ($loggingOn -eq "yes") {echo "$(Get-Date) - Restarted" | Out-File -FilePath $scriptLogFile -Append}
-	Copy-PlexLog
+	if ($copyPlexLog -eq "yes") {Copy-PlexLog}
 }
 
 function Copy-PlexLog {
