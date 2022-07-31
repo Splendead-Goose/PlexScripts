@@ -1,7 +1,7 @@
 ########################
 # Plex Checker ~ Goose #
 # Created Jul 28, 2022 #
-# Updated Jul 29, 2022 #
+# Updated Jul 30, 2022 #
 ########################
 
 #################################################################
@@ -20,7 +20,7 @@
 
 # Script Variables
 $global:breakLoop = "0"
-$scriptVer = "v0.03"
+$scriptVer = "v0.04"
 
 # Checking Variables
 $checkUri = "https://localhost:32400/web/index.html"
@@ -29,14 +29,18 @@ $goodStatusCode = "200"
 $timeBetweenChecks = "300"
 
 # Process Variables
-$plexProcessName = "Plex Media Server"
+$plexProcessName1 = "Plex Media Server"
+$plexProcessName2 = "PlexScriptHost"
+$plexProcessName3 = "Plex Transcoder"
 $plexProcessPath = "C:\Program Files (x86)\Plex\Plex Media Server\Plex Media Server.exe"
+$timeBetweenEachStop = "5"
 $timeBetweenStopStart = "30"
 
 # Logging Variables
 $scriptLogFile = "$Env:USERPROFILE\Downloads\Check-Plex-$(Get-Date -Format "yyyyMMdd").log"
 $plexLogFile = "$Env:LOCALAPPDATA\Plex Media Server\Logs\Plex Media Server.1.log"
-$copyLogPath = "$Env:USERPROFILE\Downloads\Plex-Borked-$(Get-Date -Format "yyyyMMddHHmmss").log"
+$copyLogPath = "$Env:USERPROFILE\Downloads\"
+$copyLogName = "Plex-Crash-"
 
 # Switch Variables - On is "yes"
 $loggingOn = "yes"
@@ -68,7 +72,11 @@ function Get-PlexStatus {
 
 function Auto-RestartPlex {
 	Write-Host "`nRestarting Plex..." -foregroundcolor "Magenta"
-	Stop-Process -Name $plexProcessName
+	Stop-Process -Name $plexProcessName1
+	Start-Sleep $timeBetweenEachStop
+	Stop-Process -Name $plexProcessName2
+	Start-Sleep $timeBetweenEachStop
+	Stop-Process -Name $plexProcessName3
 	Start-Sleep -Seconds $timeBetweenStopStart
 	Start-Process -FilePath $plexProcessPath
 	if ($loggingOn -eq "yes") {echo "$(Get-Date) - Restarted" | Out-File -FilePath $scriptLogFile -Append}
@@ -78,7 +86,7 @@ function Auto-RestartPlex {
 function Copy-PlexLog {
 	# Wait a bit for Plex to rotate logs
 	Start-Sleep -Seconds $timeBetweenStopStart
-	Copy-Item $plexLogFile -Destination $copyLogPath
+	Copy-Item $plexLogFile -Destination "$copyLogPath$copyLogName$(Get-Date -Format "yyyyMMddHHmmss").log"
 }
 
 ### Do Work ###
