@@ -1,7 +1,7 @@
 ########################
 # Plex Checker ~ Goose #
 # Created Jul 28, 2022 #
-# Updated Jul 30, 2022 #
+# Updated Aug 01, 2022 #
 ########################
 
 #################################################################
@@ -20,7 +20,7 @@
 
 # Script Variables
 $global:breakLoop = "0"
-$scriptVer = "v0.04"
+$scriptVer = "v0.05"
 
 # Checking Variables
 $checkUri = "https://localhost:32400/web/index.html"
@@ -44,8 +44,12 @@ $copyLogName = "Plex-Crash-"
 
 # Switch Variables - On is "yes"
 $loggingOn = "yes"
-$autoRestart = "yes"
+$autoRestart = "no"
 $copyPlexLog = "yes"
+
+# Scheduled Tasks
+$scheduledTasksStart = "02"
+$scheduledTasksStop = "08"
 
 
 ### Functions ###
@@ -54,6 +58,11 @@ function Display-Info {
 	Clear-Host
 	Write-Host "Plex Checker - $scriptVer" -foregroundcolor "Yellow"
 	Write-Host "`nCurrent - $(Get-Date)" -foregroundcolor "Cyan"
+	Write-Host "`nSwitches:" -foregroundcolor "Cyan"
+	Write-Host "`tLogging - $loggingOn" -foregroundcolor "Cyan"
+	Write-Host "`tAuto Restart - $autoRestart" -foregroundcolor "Cyan"
+	Write-Host "`tCopy Plex Log - $copyPlexLog" -foregroundcolor "Cyan"
+	Write-Host "`nScheduled Tasks - $scheduledTasksStart-$scheduledTasksStop" -foregroundcolor "Cyan"
 }
 
 function Get-PlexStatus {
@@ -62,11 +71,34 @@ function Get-PlexStatus {
 		# Everything is Good
 		Write-Host "`nPlex is Operational" -foregroundcolor "Green"
 		if ($loggingOn -eq "yes") {echo "$(Get-Date) - Operational" | Out-File -FilePath $scriptLogFile -Append}
-	}else {
+	}
+	else {
 		# Everything is NOT Good
 		Write-Host "`nPlex is Down!" -foregroundcolor "Red"
 		if ($loggingOn -eq "yes") {echo "$(Get-Date) - ERROR" | Out-File -FilePath $scriptLogFile -Append}
-		if ($autoRestart -eq "yes") {Auto-RestartPlex} else {$global:breakloop = "1"}
+		if ($autoRestart -eq "yes") {Get-Maintenance} else {$global:breakloop = "1"}
+	}
+}
+
+function Get-Maintenance {
+	# Check if we are in Scheduled Tasks time
+	if ($scheduledTasksStart -gt $scheduledTasksStop) {
+		if ($(Get-Date -Format "HH") -gt $scheduledTasksStop -And $(Get-Date -Format "HH") -lt $scheduledTasksStart) {Auto-RestartPlex}
+		else {
+			Write-Host "`nPlex Performing Scheduled Tasks" -foregroundcolor "Magenta"
+			if ($loggingOn -eq "yes") {echo "$(Get-Date) - In Scheduled Tasks" | Out-File -FilePath $scriptLogFile -Append}
+		}
+	}
+	elseif ($scheduledTasksStart -lt $scheduledTasksStop) {
+		if ($(Get-Date -Format "HH") -lt $scheduledTasksStart -Or $(Get-Date -Format "HH") -gt $scheduledTasksStop) {Auto-RestartPlex}
+		else {
+			Write-Host "`nPlex Performing Scheduled Tasks" -foregroundcolor "Magenta"
+			if ($loggingOn -eq "yes") {echo "$(Get-Date) - In Scheduled Tasks" | Out-File -FilePath $scriptLogFile -Append}
+		}
+	}
+	else {
+		Write-Host "Error Confirming NOT in Schedule Task Time"
+		$global:breakloop = "1"
 	}
 }
 
