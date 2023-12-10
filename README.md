@@ -21,7 +21,7 @@ Collection of Scripts for Plex
 # Get-SmartData.ps1
 * This was built to log SMART data from local disks
 * This can be run as a Scheduled Task (requires Highest Privileges) or on-demand (will UAC prompt if enabled)
-* Requires smartmontools (https://www.smartmontools.com/) - smartctl.exe
+* Requires smartmontools (https://www.smartmontools.org) - smartctl.exe
 * Just place the script into the same directory as smartctl.exe
 * Logging happens in that same directory under "Logs"
 * Each log filename is formatted as: serial-date.log
