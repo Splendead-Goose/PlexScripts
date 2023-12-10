@@ -15,6 +15,7 @@ Collection of Scripts for Plex
 * This script requires PowerShell 7 to be installed
 * Right-click the script and click "Run with PowerShell 7"
 * This is a blocking script which will remain open the entire time it is running
+
 ![Check-Plex](/Check-Plex-Screenshot.png?raw=true "Check Plex Screenshot")
 
 # Get-SmartData.ps1
